@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dongni\'s Android Labs</string>
+    <string name="hello_message">哈喽世界！</string>
+    <string name="button_message">我是按键</string>
+</resources>
