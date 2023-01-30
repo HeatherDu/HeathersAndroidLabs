@@ -3,4 +3,8 @@
     <string name="app_name">Dongni\'s Android Labs</string>
     <string name="hello_message">哈喽世界！</string>
     <string name="button_message">我是按键</string>
+    <string name="spin_message">旋转国旗</string>
+    <string name="button1">按键1</string>
+    <string name="button2">按键2</string>
+    <string name="button3">按键3</string>
 </resources>
