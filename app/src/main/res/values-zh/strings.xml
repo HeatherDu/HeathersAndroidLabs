@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Dongni\'s Android Labs</string>
-    <string name="hello_message">哈喽世界！</string>
-    <string name="button_message">我是按键</string>
+    <string name="password_message">输入你的密码</string>
+    <string name="button_message">登录</string>
 </resources>
