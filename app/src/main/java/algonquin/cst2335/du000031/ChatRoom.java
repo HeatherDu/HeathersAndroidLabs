@@ -3,6 +3,8 @@ package algonquin.cst2335.du000031;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -129,6 +131,16 @@ public class ChatRoom extends AppCompatActivity {
         };
 
         binding.recycleView.setLayoutManager(new LinearLayoutManager(this));
+
+        chatModel.selectedMessage.observe(this, newMessageValue -> {
+            MessageDetailsFragment chatFragment = new MessageDetailsFragment(newMessageValue);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentLocation, chatFragment)
+                    .addToBackStack("")
+                    .commit();
+
+        });
     }
 
     class MyRowHolder extends RecyclerView.ViewHolder {
@@ -139,6 +151,7 @@ public class ChatRoom extends AppCompatActivity {
             super(itemView);
 
             itemView.setOnClickListener(click -> {
+                /*
                 int position = getAbsoluteAdapterPosition();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(ChatRoom.this);
@@ -167,7 +180,10 @@ public class ChatRoom extends AppCompatActivity {
                         })
                         .setNegativeButton("No", (dialog, cl) -> {})
                         .create().show();
-
+                */
+                int position = getAbsoluteAdapterPosition();
+                ChatMessage selected = messages.get(position);
+                chatModel.selectedMessage.postValue(selected);
             });
 
             messageText = itemView.findViewById(R.id.message);
