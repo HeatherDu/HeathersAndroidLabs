@@ -11,9 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -36,6 +39,65 @@ public class ChatRoom extends AppCompatActivity {
     private ChatMessageDAO mDAO;
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.my_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.item_delete:
+                //int position = getAbsoluteAdapterPosition();
+                ChatMessage clickedMessage = chatModel.selectedMessage.getValue();
+                if (clickedMessage == null) {
+                    break;
+                }
+                int position = messages.indexOf(clickedMessage);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChatRoom.this);
+                builder.setMessage("Do you want to delete the message: " + clickedMessage.getMessage())
+                        .setTitle("Question:")
+                        .setPositiveButton("Yes", (dialog, cl) -> {
+//                            ChatMessage clickedMessage = messages.get(position);
+
+                            Executor thread = Executors.newSingleThreadExecutor();
+                            thread.execute(() -> {
+                                mDAO.deleteMessage(clickedMessage);
+                                messages.remove(position);
+                                runOnUiThread(() -> {
+                                    myAdapter.notifyItemRemoved(position);
+                                    // close the fragment
+                                    getSupportFragmentManager().popBackStack();
+                                    // set selected message to null
+                                    chatModel.selectedMessage.postValue(null);
+                                });
+                            });
+
+//                            Snackbar.make(messageText, "You deleted message #" + position, Snackbar.LENGTH_LONG)
+//                                    .setAction("Undo", clk -> {
+//                                        Executor newThread = Executors.newSingleThreadExecutor();
+//                                        newThread.execute(() -> {
+//                                            mDAO.insertMessage(clickedMessage);
+//                                            messages.add(position, clickedMessage);
+//                                            runOnUiThread(() -> myAdapter.notifyItemInserted(position));
+//                                        });
+//                                    })
+//                                    .show();
+                        })
+                        .setNegativeButton("No", (dialog, cl) -> {})
+                        .create().show();
+                break;
+            case R.id.item_about:
+                Toast.makeText(getApplicationContext(), "Version 1.0, created by Dongni Du", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -43,6 +105,7 @@ public class ChatRoom extends AppCompatActivity {
         mDAO = db.cmDAO();
 
         binding = ActivityChatRoomBinding.inflate(getLayoutInflater());
+        setSupportActionBar(binding.myToolbar);
         chatModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
         messages = chatModel.messages.getValue();
         if (messages == null) {
@@ -133,13 +196,15 @@ public class ChatRoom extends AppCompatActivity {
         binding.recycleView.setLayoutManager(new LinearLayoutManager(this));
 
         chatModel.selectedMessage.observe(this, newMessageValue -> {
-            MessageDetailsFragment chatFragment = new MessageDetailsFragment(newMessageValue);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentLocation, chatFragment)
-                    .addToBackStack("")
-                    .commit();
-
+            // make sure the newMessageValue is not null
+            if (newMessageValue != null) {
+                MessageDetailsFragment chatFragment = new MessageDetailsFragment(newMessageValue);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentLocation, chatFragment)
+                        .addToBackStack("")
+                        .commit();
+            }
         });
     }
 

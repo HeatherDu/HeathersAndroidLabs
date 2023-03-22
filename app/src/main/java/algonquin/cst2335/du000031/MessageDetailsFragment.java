@@ -20,7 +20,7 @@ public class MessageDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        DetailsLayoutBinding binding = DetailsLayoutBinding.inflate(inflater);
+        DetailsLayoutBinding binding = DetailsLayoutBinding.inflate(inflater, container, false);
 
         binding.messageText.setText(selected.getMessage());
         binding.timeText.setText(selected.getTimeSent());
